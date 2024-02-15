@@ -47,13 +47,15 @@ class BankPrograme(Program):
         lambda = 128
         B = np.random.randint(0, 2, lambda)
 
-		epr_qubit = epr_socket.create_keep(lambda)[]
+        # for i in range(lambda):
+        #     epr_socket.create_keep(i)[]
+
+		epr_qubit = epr_socket.create_keep(lambda)
 	    
         for i in range(lambda):
             if B[i] == 1:
                 epr_qubit[i].H()        
             b[i] = epr_qubit.measure()
-
         yield from connection.flush()
         print(f"{ns.sim_time()} ns: Server measures local EPR qubit: {result}")
 
