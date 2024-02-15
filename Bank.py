@@ -23,10 +23,10 @@ class BankPrograme(Program):
             max_qubits=1,
         )
 
-	def generate_random_string(lenght = 256):
-		letters = string.ascii_letters + string.digits
-		random_string = ''.join(secrets.choice(letters) for i in range(lenght))
-		return random_string
+        def generate_random_string(lenght = 256):
+        letters = string.ascii_letters + string.digits
+        random_string = ''.join(secrets.choice(letters) for i in range(lenght))
+        return random_string
 
     def run(self, context: ProgramContext):
         connection: BaseNetQASMConnection = context.connection
@@ -38,15 +38,22 @@ class BankPrograme(Program):
         epr_socket: EPRSocket = context.epr_sockets[client]
 
         # send a string message via a classical channel
-        # generate C and fix
-		C = generate_random_string(256)
+        # generate C and fi
+        C = generate_random_string(256)
         csocket.send(C)
         print(f"{ns.sim_time()} ns: Server sends message: {C}")
 
         # Register a request to create an EPR pair, then apply a Hadamard gate on the epr qubit and measure
-        epr_qubit = epr_socket.create_keep()[0]
-        epr_qubit.H()
-        result = epr_qubit.measure()
+        lambda = 128
+        B = np.random.randint(0, 2, lambda)
+
+		epr_qubit = epr_socket.create_keep(lambda)[]
+	    
+        for i in range(lambda):
+            if B[i] == 1:
+                epr_qubit[i].H()        
+            b[i] = epr_qubit.measure()
+
         yield from connection.flush()
         print(f"{ns.sim_time()} ns: Server measures local EPR qubit: {result}")
 
