@@ -13,12 +13,11 @@ import base64
 
 from cryptography.hazmat.primitives.poly1305 import Poly1305
 from cryptography.hazmat.backends import default_backend
-# from os import urandom
 
-class Client(Program):
-	def __init__(self, parties: List[str], lamda, C, M: List[str]):
+class ClientPrograme(Program):
+	def __init__(self, parties: List[str], lambda_parameter, C, M: List[str]):
 		self.parties = parties
-		self.lamda = lamda
+		self.lambda_parameter = lambda_parameter
 		self.C = C
 		self.M = M
 
@@ -28,7 +27,7 @@ class Client(Program):
 			name="client_program",
 			csockets=self.parties,
 			epr_sockets=self.parties,
-			max_qubits=self.lamda, #not sure maybe should be one
+			max_qubits=self.lambda_parameter, #not sure maybe should be one
 		)
 
 	def run(self, context: ProgramContext):
@@ -41,7 +40,7 @@ class Client(Program):
 		epr_socket: EPRSocket = context.epr_sockets[0]
 
 		# Receiving the |P> from ttp
-		epr_qubits = epr_socket.recv_keep(number=lamda)
+		epr_qubits = epr_socket.recv_keep(number=lambda_parameter)
 
 		# Select a merchant randomly
 		merchant_id = random.randint(1, len(parties))
