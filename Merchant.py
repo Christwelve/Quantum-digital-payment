@@ -28,7 +28,7 @@ class MerchantProgram(Program):
         connection = context.connection
 
         # Merchant listens for messages on his classical socket
-        clientMessage = clientCsocket.recv()
+        clientMessage = yield from clientCsocket.recv()
         print(f"{ns.sim_time()} ns: Merchant receives from Client message: {clientMessage}")
 
         messageToBank = clientMessage + ",MerchantID"
