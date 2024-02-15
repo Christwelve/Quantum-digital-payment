@@ -8,10 +8,22 @@ from Client import ClientPrograme
 from Bank import BankPrograme
 from Merchant import MerchantPrograme
 
+import os
+import base64
+
 node_client_name = "Client"
 node_bank_name = "Bank"
-node_merchant_name = "Merchant"
-nodeList = [node_client_name, node_bank_name,node_merchant_name]
+node_merchants = ["Merchant1", "Merchant2"]
+nodeList = [node_client_name, node_bank_name,node_merchants[0], node_merchants[1]]
+# Merhant id should be 128 bit length
+mid1 = os.urandom(16)
+mid2 = os.urandom(16)
+M = [base64.b64encode(mid1), base64.b64encode(mid2)]
+
+lambda_parameter = 128
+C = os.urandom(32)
+
+
 
 # import network configuration from file
 cfg = create_complete_graph_network(
@@ -24,8 +36,8 @@ cfg = create_complete_graph_network(
 
 
 programs = {
-    node_client_name: ClientPrograme(bank=node_bank_name, merchant=node_merchant_name)
-    node_bank_name: BankPrograme(client=node_client_name, merchant=node_merchant_name)
+    node_client_name: ClientPrograme(parties = [node_bank_name, node_merchants[0], node_merchants[1]], lambda_parameter=lambda_paramnter, C=C, M=M),
+    node_bank_name: BankPrograme(client=node_client_name, merchant=node_merchant_name),
     node_merchant_name: Merchant(client=node_client_name,bank=node_bank_name)
     }
 
