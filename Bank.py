@@ -1,5 +1,6 @@
 from typing import List
-
+import string
+import secrets
 import netsquid as ns
 from netqasm.sdk.classical_communication.socket import Socket
 from netqasm.sdk.connection import BaseNetQASMConnection
@@ -22,6 +23,11 @@ class BankPrograme(Program):
             max_qubits=1,
         )
 
+	def generate_random_string(lenght = 256):
+		letters = string.ascii_letters + string.digits
+		random_string = ''.join(secrets.choice(letters) for i in range(lenght))
+		return random_string
+
     def run(self, context: ProgramContext):
         connection: BaseNetQASMConnection = context.connection
 
@@ -33,6 +39,7 @@ class BankPrograme(Program):
 
         # send a string message via a classical channel
         # generate C and fix
+		C = generate_random_string(256)
         csocket.send(C)
         print(f"{ns.sim_time()} ns: Server sends message: {C}")
 
