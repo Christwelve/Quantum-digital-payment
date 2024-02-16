@@ -17,7 +17,7 @@ The main objective is to simulate the execution of the quantum-digital payment p
 2. Bank generates classical information for client token $C$.
 3. Bank generates $n$ bits of 0/1 as key ($b$) and basis ($B$).
 4. Bank generates $n|0>$ qubit list. 
-5. Bank applies $X$ gate to the ith qubit whenever the ith bit of $b$ is 1. Then it applies $H$ gate whenever the $i^{th}$ bit of $B$ is 1. Now we have a qubit list called $P$. $P$ is the payment token.
+5. Bank applies $X$ gate to the $i^{th}$ qubit whenever the ith bit of $b$ is 1. Then it applies $H$ gate whenever the $i^{th}$ bit of $B$ is 1. Now we have a qubit list called $P$. $P$ is the payment token.
 6. Bank sends $P$ using quantum communication and $C$ classically to the Client.
 
 7. Client computes $m = MAC(C, MerchantID)$. Where the MAC (Message Authentication Code) function is the encyption function using a hash function, $C$ and $MerchantID$.
