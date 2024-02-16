@@ -17,6 +17,6 @@
   
 11. Bank finds the C, b, and B corresponding to the ClientID it recieved from the merchant
 12. Bank computes m = MAC(C, MerchantID).
-13. Bank compares every ith bit of m and the previously generated B, if m_i = B_i then it compares the ith bit of K and b, if K_i = b_i. If both checks pass, the transaction is accepted, otherwise it is rejected.
+13. Bank compares every ith bit of m and the previously generated B, if m_i = B_i then it compares the ith bit of K and b, to check if K_i = b_i. If both checks pass, the transaction is accepted, otherwise it is rejected.
 
 
