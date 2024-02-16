@@ -73,7 +73,7 @@ python3 run_SecureQuantumDigitalPayments.py
 - **Malicious Client**: Explore the effects of exploiting device imperfections for double-spending.
 
 ## Results
-- **Quantum State Fidelity** : The fidelity of quantum states is crucial for the security and effectiveness of the payment protocol. We can varied the physical parameters of qubits and quantum links to observe their impacts.
+- **Quantum State Fidelity** : The fidelity of quantum states is crucial for the security and effectiveness of the payment protocol. We can varied the physical parameters of qubits and quantum links to observe their impacts. Also, it seems SquidASM only support < 100qbits simulations.
 
 - **Simulation of Malicious Behaviors by Test Scenarios** :  
 *Malicious Merchant*: The simulator was able to detect and reject of fraudulent transaction attempts where a malicious merchant tried to forge the output tag.  
