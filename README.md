@@ -43,3 +43,54 @@ The main objective is to simulate the execution of the quantum-digital payment p
 - **SquidASM Installation**: Follow the SquidASM tutorial for installation [here](https://squidasm.readthedocs.io/en/latest/installation.html).
 SquidASM only works on Linux and MacOS. For Windows users we recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
+## Installation
+```bash
+# Clone the repository
+git clone https://github.com/Christwelve/Quantum-digital-payment.git
+
+# Navigate to the project directory
+cd Quantum-digital-payment/
+
+# Install Python (if not installed)
+sudo apt update
+sudo apt install python3
+
+# Install dependencies
+pip install numpy==1.19.5
+
+# Follow SquidASM installation instructions as per the provided link
+```
+
+## Usage
+To run the simulation:
+```bash
+python3 run_SecureQuantumDigitalPayments.py
+```
+
+## Simulation Scenarios
+- **Honest Client and Merchant**: Simulate the protocol execution with both parties behaving honestly.
+- **Malicious Merchant**: Demonstrate the impact of a forged output tag.
+- **Malicious Client**: Explore the effects of exploiting device imperfections for double-spending.
+
+## Results
+- **Quantum State Fidelity** : The fidelity of quantum states is crucial for the security and effectiveness of the payment protocol. We can varied the physical parameters of qubits and quantum links to observe their impacts.
+
+- **Simulation of Malicious Behaviors by Test Scenarios** :
+__Malicious Merchant__: The simulator was able to detect and reject of fraudulent transaction attempts where a malicious merchant tried to forge the output tag.
+__Malicious Client__: The protocol was resilient against double-spending attempts. The strategy of measuring on different bases to create two valid tokens was effectively countered by the TTP's verification mechanism.
+
+- **Implications and Recommendations**:
+__Optimization of Physical Parameters__: The results underscore the importance of optimizing the physical parameters of qubits and communication channels to maximize the fidelity of quantum states.
+__Security Against Attacks__: To further bolster the security of the quantum digital payment protocol, we explored the integration of Quantum Key Distribution (QKD) algorithms for secure communication channels (not implemented).
+
+## Contributions
+This project was developed as part of the [Pan-European Quantum Internet Hackathon 2024](https://quantuminternetalliance.org/quantum-internet-hackathon-2024/). The event took place on February 15th and 16th, and this application is the result of one of our team's work these two days at LIP6 laboratory, Université de la Sorbonne, Paris.
+
+Your contributions can help us improve the functionality, security, and efficiency of this quantum digital payment system. Whether it's through code contributions, bug reports, feature requests, or documentation, every bit of help is greatly appreciated.
+
+## References
+- Peter Schiansky, et al. "Demonstration of quantum-digital payments." Nature Communications, 14(1), Jun 2023.
+
+## Contact
+We welcome contributions and suggestions to improve this project. If you are interested in contributing, please contact [@Chriswelve](https://github.com/Chriswelve) on GitHub for more information on how to get involved.
+
