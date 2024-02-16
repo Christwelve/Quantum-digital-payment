@@ -15,6 +15,6 @@
 
 10. Merchant takes the $ClientID$ and $K$ and sends both along with $MerchantID$ to the Bank.
   
-11. Bank finds the $C$, $b$, and $B$ corresponding to the $ClientID$ it recieved from the merchant
+11. Bank looks up the $C$, $b$, and $B$ corresponding to the $ClientID$ it recieved from the Merchant.
 12. Bank computes $m = MAC(C, MerchantID)$.
 13. Bank compares every $i^{th}$ bit of $m$ and the previously generated $B$, if $m_i = B_i$ then it compares the $i^{th}$ bit of $K$ and $b$, to check if $K_i = b_i$. If both checks pass, the transaction is accepted, otherwise it is rejected.
