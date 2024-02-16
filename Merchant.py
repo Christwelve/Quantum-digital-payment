@@ -7,8 +7,8 @@ from netqasm.sdk.epr_socket import EPRSocket
 
 from squidasm.sim.stack.program import Program, ProgramContext, ProgramMeta
 
-class MerchantProgram(Program):
-    def __init__(self, client: str, bank: str):
+class MerchantPrograme(Program):
+    def __init__(self, client: str, bank: str, merchant_id: str):
         self.client = client
         self.bank = bank
 
@@ -16,7 +16,9 @@ class MerchantProgram(Program):
     def meta(self) -> ProgramMeta:
         return ProgramMeta(
             name="tutorial_program",
-            csockets=[self.client, self.bank]
+            csockets=[self.client, self.bank],
+			epr_sockets=self.client,
+            max_qubits=1,
         )
         
 
@@ -31,7 +33,7 @@ class MerchantProgram(Program):
         clientMessage = yield from clientCsocket.recv()
         print(f"{ns.sim_time()} ns: Merchant receives from Client message: {clientMessage}")
 
-        messageToBank = clientMessage + ",MerchantID"
+        messageToBank = clientMessage + merchant_id 
         bankCsocket.send(messageToBank)
         print(f"{ns.sim_time()} ns: Merchant sends to Bank message: {messageToBank}")
     

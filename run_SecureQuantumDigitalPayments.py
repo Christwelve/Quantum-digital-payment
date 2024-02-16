@@ -13,8 +13,8 @@ import base64
 
 node_client_name = "Client"
 node_bank_name = "Bank"
-node_merchants = ["Merchant1", "Merchant2"]
-nodeList = [node_client_name, node_bank_name,node_merchants[0], node_merchants[1]]
+node_merchants = ["Merchant1"]
+nodeList = [node_client_name, node_bank_name,node_merchants[0]]
 
 # Merchant id should be 128 bit length
 merchant_ids = [[merchant, base64.b64encode(os.urandom(16))] for merchant in node_merchants]
@@ -37,11 +37,11 @@ cfg = create_complete_graph_network(
 
 programs = {
     node_client_name: ClientPrograme(parties = [node_bank_name] + node_merchants, lambda_parameter=lambda_parameter, C=C, M=M),
-    node_bank_name: BankPrograme(client=node_client_name, merchants=node_merchants),
+    node_bank_name: BankPrograme(client_name=node_client_name, merchants=node_merchants, lambda_parameter=lambda_parameter, C=C),
 }
 
 for merchant_id in merchant_ids:
-    programs[merchant_id[0]] = MerchantPrograme(client=node_client_name, bank=node_bank_name)
+    programs[merchant_id[0]] = MerchantPrograme(client=node_client_name, bank=node_bank_name, merchant_id = M[0])
 
 # Run the simulation. Programs argument is a mapping of network node labels to programs to run on that node
 run(config=cfg, programs=programs, num_times=1)

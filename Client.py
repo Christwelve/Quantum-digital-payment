@@ -11,7 +11,7 @@ import random
 
 import base64
 
-from cryptography.hazmat.primitives.poly1305 import Poly1305
+from cryptography.hazmat.primitives import poly1305
 from cryptography.hazmat.backends import default_backend
 
 class ClientPrograme(Program):
@@ -34,46 +34,51 @@ class ClientPrograme(Program):
 		connection: BaseNetQASMConnection = context.connection
 
 		# classical connection with ttp
-		csocket_ttp: Socket  = context.csockets[0]
+		csocket_ttp: Socket  = context.csockets[self.parties[0]]
 
 		# connect with ttp for qubit exchange
-		epr_socket: EPRSocket = context.epr_sockets[0]
+		epr_socket: EPRSocket = context.epr_sockets[self.parties[0]]
 
 		# Receiving the |P> from ttp
-		epr_qubits = epr_socket.recv_keep(number=lambda_parameter)
+		epr_qubits = epr_socket.recv_keep(number=self.lambda_parameter)
 
 		# Select a merchant randomly
-		merchant_id = random.randint(1, len(parties))
+		#merchant_id = random.randint(1, len(parties))
+		merchant_id = 0
 		print(f'Merchant id: {merchant_id}')
 
 		# Connect with merchant
-		csocket_merchant: Socket  = context.csockets[merchant_id]
+		csocket_merchant: Socket  = context.csockets[self.parties[merchant_id + 1]]
 
 		# Calculate the MAC(C, M)
-		poly1305 = Poly1305(C)
-		m = poly1305.update(base64.b64decode(M[merchant_id - 1]))
-		m = m.finalize()
+		p = poly1305.Poly1305(self.C)
+		p.update(base64.b64decode(self.M[merchant_id - 1]))
+		m = p.finalize()
 
 		# Calculate the K
 		K = []
 		m_list = list(m)
-		qubit_list = list(epr_qubits)
+		print(f"m_list: {len(m_list)}")
+		#qubit_list = list(epr_qubits)
 		j = 0
 		for m_byte in m_list:
 			i = 0
 			while (i < 8):
 				bit = (m_byte >> i) & 1
-				qubit = qubit_list[j]
+				qubit = epr_qubits[j]
 				if (bit == 1):
 					qubit.H()
-				K[j] = qubit.measure()
+				K.append(qubit.measure())
 				j += 1
 				i += 1
 		yield from connection.flush()
 
 		# Send K,C back to merchant
 		csocket_merchant.send(self.name)
-		K_str = ''.join(K)
+		K_list = []
+		for elem in K:
+			K_list.append(str(elem))
+		K_str = ''.join(K_list)
 		csocket_merchant.send(K_str)
 		print(f"{ns.sim_time()} ns: Client sends to Merchant: {K_str}")
 
