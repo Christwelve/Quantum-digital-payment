@@ -9,7 +9,7 @@ from netqasm.sdk.epr_socket import EPRSocket
 from squidasm.sim.stack.program import Program, ProgramContext, ProgramMeta
 
 class BankPrograme(Program):
-    def __init__(self, client_name: str, merchant_name: str):
+    def __init__(self, client_name: str, merchant_name: str, lambda_parameter, C):
         self.client = client_name
         self.merchant = merchant_name
 
@@ -39,20 +39,20 @@ class BankPrograme(Program):
 
         # send a string message via a classical channel
         # generate C and fi
-        C = generate_random_string(256)
-        csocket.send(C)
-        print(f"{ns.sim_time()} ns: Server sends message: {C}")
+        #C = generate_random_string(256)
+        #csocket.send(C)
+        #print(f"{ns.sim_time()} ns: Server sends message: {C}")
 
         # Register a request to create an EPR pair, then apply a Hadamard gate on the epr qubit and measure
-        lambda = 128
-        B = np.random.randint(0, 2, lambda)
+        # lambda = 128
+        B = np.random.randint(0, 2, lambda_parameter)
 
         # for i in range(lambda):
         #     epr_socket.create_keep(i)[]
 
-		epr_qubit = epr_socket.create_keep(lambda)
+		epr_qubit = epr_socket.create_keep(lambda_parameter)
 	    
-        for i in range(lambda):
+        for i in range(lambda_parameter):
             if B[i] == 1:
                 epr_qubit[i].H()        
             b[i] = epr_qubit.measure()
