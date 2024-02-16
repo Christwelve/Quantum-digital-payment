@@ -1,5 +1,8 @@
 # Quantum-digital-payment
 
+Team: Md Shadnan Azwad Khan, Chin-Te LIAO, Christina Repou, Anne Marin,
+Flavia Voicu, Christian Meng, Sacha Ulysse Jeoffret
+
 ## Introduction
 This project presents a simulation of a quantum-digital payment protocol as described in the paper "Demonstration of quantum-digital payments" (Nature Communications, 14(1), June 2023). It utilizes SquidASM from the NetSquid Simulator to model the interactions between a Client, a Merchant, and a Bank/Credit Card Institute (Trusted Third Party, TTP) in a secure quantum payment environment.
 
@@ -33,8 +36,8 @@ The main objective is to simulate the execution of the quantum-digital payment p
 
 
 ## Technologies
-- **Quantum Simulation**: SquidASM (NetSquid Simulator) 
-- **Programming Language**: Python
+- **Quantum Simulation**: SquidASM (NetSquid Simulator) version b0.0.5
+- **Programming Language**: Python3.10
 - **Supported Qubit Technologies**: Generic hardware, NV centers, color centers (as available in SquidASM)
 
 ## Pre-requisites
