@@ -10,13 +10,17 @@ from squidasm.sim.stack.program import Program, ProgramContext, ProgramMeta
 from cryptography.hazmat.primitives import poly1305
 from cryptography.hazmat.backends import default_backend
 
+from cryptography.hazmat.primitives import poly1305
+from cryptography.hazmat.backends import default_backend
 
 import numpy as np
+import base64
 
 class BankProgram(Program):
     def __init__(self, parties: List[str], lambda_parameter, C):
         self.parties = parties
         self.lambda_parameter = lambda_parameter
+        self.C = C
 
     @property
     def meta(self) -> ProgramMeta:
@@ -24,7 +28,7 @@ class BankProgram(Program):
             name="sqdp",
             csockets=self.parties,
             epr_sockets=self.parties,
-            max_qubits=1,
+            max_qubits=self.lambda_parameter,
         )
 
     def generate_random_string(lenght = 256):
@@ -37,10 +41,11 @@ class BankProgram(Program):
         print("Bank program started")
 
         #client side
-        
+
         # get classical socket to peer
         csocket: Socket = context.csockets[self.parties[0]]
         epr_socket: EPRSocket = context.epr_sockets[self.parties[0]]
+        msocket = context.csockets[self.parties[1]]
 
         # send a string message via a classical channel
         # generate C and fi
@@ -59,13 +64,10 @@ class BankProgram(Program):
         for i in range(self.lambda_parameter):
             epr_qubit = epr_socket.create_keep()[0]
             if B[i] == 1:
-                epr_qubit.H()      
+                epr_qubit.H()
             b.append(epr_qubit.measure())
         yield from connection.flush()
-        print(f"{ns.sim_time()} ns: Server measures local EPR qubit: {b}")
 
-        print("some")
-        
         #merchant side
         # msocket_list = []
         # for merchant in self.merchants:
@@ -73,7 +75,7 @@ class BankProgram(Program):
         #    msocket_list.append(msocket)
 
         #one merchant
-        msocket = context.csockets[self.parties[1]]
+        # msocket = context.csockets[self.parties[1]]
         message = yield from msocket.recv()
         #split by space
         information = message.split()
@@ -81,14 +83,15 @@ class BankProgram(Program):
         client_id = information[0]
         merchant_id = information[2]
 
-        #merchant_id 
+        #merchant_id
 
         # Calculate the MAC(C, M)
-        poly1305 = Poly1305(C)
-        m = poly1305.update(base64.b64decode(merchant_id))
-        m = m.finalize()
+        p = poly1305.Poly1305(self.C)
+        p.update(base64.b64decode(merchant_id))
+        m = p.finalize()
 
         # Authenticaation
+        cnt = 0
         verified = True
         m_list = list(m)
         k_list = []
@@ -98,24 +101,27 @@ class BankProgram(Program):
         for m_byte in m_list:
             i = 0
             while (i < 8):
+                if (j > 8 * (self.lambda_parameter // 8) - 1):
+                    break
                 bit = (m_byte >> i) & 1
                 if (bit == B[j]):
                     if k_list[j] != b[j]:
                         verified = False
-                        break
+                        cnt+=1
                 j += 1
                 i += 1
-        
+            if (j > 8 * (self.lambda_parameter // 8) - 1):
+                break
+
         if verified:
             print(f"{ns.sim_time()} ns: Bank verifies the transaction with merchant {merchant_id} and client {client_id}")
         else:
-            print(f"{ns.sim_time()} ns: Bank rejects the transaction with merchant {merchant_id} and client {client_id}")
-        
+            print(f"{ns.sim_time()} ns: Bank rejects the transaction with merchant {merchant_id} and client {client_id}. Number of errors: {cnt}/{j}")
+
         # get connection to quantum network processing unit
         connection = context.connection
 
         # Bob listens for messages on his classical socket
         message = yield from msocket.recv()
         print(f"{ns.sim_time()} ns: Client: {self.name} receives message: {message}")
-        
         return {}

@@ -19,7 +19,7 @@ print(nodeList)
 # Merchant id should be 128 bit length
 #merchant_ids = [[merchant, base64.b64encode(os.urandom(16))] for merchant in node_merchants]
 merchant_id = base64.b64encode(os.urandom(16))
-lambda_parameter = 128
+lambda_parameter = 100
 C = os.urandom(32)
 
 M = [merchant_id]
@@ -35,11 +35,15 @@ cfg = create_complete_graph_network(
 
 
 
-programs = {
-    node_client_name: ClientProgram(parties = [node_bank_name] + [node_merchant_name], lambda_parameter=lambda_parameter, C=C, M=M, client_name=node_client_name),
-    node_bank_name: BankProgram(parties=[node_client_name] + [node_merchant_name], lambda_parameter=lambda_parameter, C=C),
-	node_merchant_name: MerchantProgram(parties = [node_client_name] + [node_bank_name], merchant_id = M[0])
-}
+# programs = {
+#     node_client_name: ClientProgram(parties = [node_bank_name] + [node_merchant_name], lambda_parameter=lambda_parameter, C=C, M=M, client_name=node_client_name),
+#     node_bank_name: BankProgram(parties=[node_client_name] + [node_merchant_name], lambda_parameter=lambda_parameter, C=C),
+# 	node_merchant_name: MerchantProgram(parties = [node_client_name] + [node_bank_name], merchant_id = M[0])
+# }
+programs = {}
+programs[node_merchant_name] = MerchantProgram(parties = [node_client_name] + [node_bank_name], merchant_id = M[0])
+programs[node_bank_name] = BankProgram(parties=[node_client_name] + [node_merchant_name], lambda_parameter=lambda_parameter, C=C)
+programs[node_client_name] = ClientProgram(parties = [node_bank_name] + [node_merchant_name], lambda_parameter=lambda_parameter, C=C, M=M, client_name=node_client_name)
 
 #for merchant_id in merchant_ids:
 #    programs[merchant_id[0]] = MerchantProgram(parties = [node_client_name] + [node_bank_name], merchant_id = M[0])

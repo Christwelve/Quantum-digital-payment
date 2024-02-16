@@ -10,6 +10,7 @@ from squidasm.sim.stack.program import Program, ProgramContext, ProgramMeta
 class MerchantProgram(Program):
     def __init__(self, parties: List[str], merchant_id: str):
         self.parties = parties
+        self.merchant_id = merchant_id
 
     @property
     def meta(self) -> ProgramMeta:
@@ -17,26 +18,26 @@ class MerchantProgram(Program):
             name="sqdp",
             csockets=self.parties,
 			epr_sockets=self.parties,
-            max_qubits=128,
+            max_qubits=1,
         )
-    
+
     def run(self, context: ProgramContext):
         # get classical socket to peer
         bankCsocket = context.csockets[self.parties[1]]
         clientCsocket = context.csockets[self.parties[0]]
         # get connection to quantum network processing unit
         connection = context.connection
-		
+
         print("Merchant program started")
 
         # Merchant listens for messages on his classical socket
         clientMessage = yield from clientCsocket.recv()
         print(f"{ns.sim_time()} ns: Merchant receives from Client message: {clientMessage}")
 
-        messageToBank = clientMessage + merchant_id 
+        messageToBank = str(clientMessage) + " " + str(self.merchant_id)
         bankCsocket.send(messageToBank)
         print(f"{ns.sim_time()} ns: Merchant sends to Bank message: {messageToBank}")
-    
+        
         yield from connection.flush()
 
         return {}

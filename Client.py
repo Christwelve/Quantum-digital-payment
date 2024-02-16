@@ -28,7 +28,7 @@ class ClientProgram(Program):
 			name="sqdp",
 			csockets=self.parties,
 			epr_sockets=self.parties,
-			max_qubits=128, #not sure maybe should be one
+			max_qubits=self.lambda_parameter, #not sure maybe should be one
 		)
 
 	def run(self, context: ProgramContext):
@@ -61,7 +61,6 @@ class ClientProgram(Program):
 		# Calculate the K
 		K = []
 		m_list = list(m)
-		print(f"m_list: {len(m_list)}")
 		#qubit_list = list(epr_qubits)
 		j = 0
 		for m_byte in m_list:
@@ -74,16 +73,18 @@ class ClientProgram(Program):
 				K.append(qubit.measure())
 				j += 1
 				i += 1
+			if (j > 8 * (self.lambda_parameter // 8) - 1):
+				break
 		yield from connection.flush()
-		print(f"K: {K}")
 		# Send K,C back to merchant
-		csocket_merchant.send(self.client_name)
+		# csocket_merchant.send(self.client_name)
 		K_list = []
 		for elem in K:
 			K_list.append(str(elem))
 		K_str = ''.join(K_list)
-		csocket_merchant.send(K_str)
+		final = self.client_name + " " + K_str
+		csocket_merchant.send(final)
 		print(f"{ns.sim_time()} ns: Client sends to Merchant: {K_str}")
-		
+
 
 		return {}
