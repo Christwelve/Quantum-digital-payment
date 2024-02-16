@@ -7,21 +7,24 @@ from netqasm.sdk.connection import BaseNetQASMConnection
 from netqasm.sdk.epr_socket import EPRSocket
 
 from squidasm.sim.stack.program import Program, ProgramContext, ProgramMeta
+from cryptography.hazmat.primitives import poly1305
+from cryptography.hazmat.backends import default_backend
 
-class BankPrograme(Program):
-    def __init__(self, client_name: str, merchants: List[str], lambda_parameter, C):
-        self.client = client_name
-        self.merchants = merchants
-        self.parties = [client_name] + merchants
+
+import numpy as np
+
+class BankProgram(Program):
+    def __init__(self, parties: List[str], lambda_parameter, C):
+        self.parties = parties
         self.lambda_parameter = lambda_parameter
 
     @property
     def meta(self) -> ProgramMeta:
         return ProgramMeta(
-            name="sqdp_program",
+            name="sqdp",
             csockets=self.parties,
-            epr_sockets=self.client,
-            max_qubits=self.lambda_parameter,
+            epr_sockets=self.parties,
+            max_qubits=1,
         )
 
     def generate_random_string(lenght = 256):
@@ -31,12 +34,13 @@ class BankPrograme(Program):
 
     def run(self, context: ProgramContext):
         connection: BaseNetQASMConnection = context.connection
+        print("Bank program started")
 
         #client side
         
         # get classical socket to peer
         csocket: Socket = context.csockets[self.parties[0]]
-        epr_socket: EPRSocket = context.epr_sockets[self.client]
+        epr_socket: EPRSocket = context.epr_sockets[self.parties[0]]
 
         # send a string message via a classical channel
         # generate C and fi
@@ -46,20 +50,21 @@ class BankPrograme(Program):
 
         # Register a request to create an EPR pair, then apply a Hadamard gate on the epr qubit and measure
         # lambda = 128
-        B = np.random.randint(0, 2, lambda_parameter)
+        B = np.random.randint(0, 2, self.lambda_parameter)
 
         # for i in range(lambda):
         #    epr_socket.create_keep(i)[]
 
-        epr_qubit = epr_socket.create_keep(lambda_parameter)
-
-        for i in range(lambda_parameter):
+        b = []
+        for i in range(self.lambda_parameter):
+            epr_qubit = epr_socket.create_keep()[0]
             if B[i] == 1:
-                epr_qubit[i].H()        
-            b[i] = epr_qubit.measure()
+                epr_qubit.H()      
+            b.append(epr_qubit.measure())
         yield from connection.flush()
-        print(f"{ns.sim_time()} ns: Server measures local EPR qubit: {result}")
+        print(f"{ns.sim_time()} ns: Server measures local EPR qubit: {b}")
 
+        print("some")
         
         #merchant side
         # msocket_list = []
@@ -112,5 +117,5 @@ class BankPrograme(Program):
         # Bob listens for messages on his classical socket
         message = yield from msocket.recv()
         print(f"{ns.sim_time()} ns: Client: {self.name} receives message: {message}")
-
+        
         return {}

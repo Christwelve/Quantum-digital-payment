@@ -14,20 +14,21 @@ import base64
 from cryptography.hazmat.primitives import poly1305
 from cryptography.hazmat.backends import default_backend
 
-class ClientPrograme(Program):
-	def __init__(self, parties: List[str], lambda_parameter, C, M: List[str]):
+class ClientProgram(Program):
+	def __init__(self, parties: List[str], lambda_parameter, C, M: List[str], client_name: str):
 		self.parties = parties
 		self.lambda_parameter = lambda_parameter
 		self.C = C
 		self.M = M
+		self.client_name = client_name
 
 	@property
 	def meta(self) -> ProgramMeta:
 		return ProgramMeta(
-			name="client_program",
+			name="sqdp",
 			csockets=self.parties,
 			epr_sockets=self.parties,
-			max_qubits=self.lambda_parameter, #not sure maybe should be one
+			max_qubits=128, #not sure maybe should be one
 		)
 
 	def run(self, context: ProgramContext):
@@ -40,7 +41,9 @@ class ClientPrograme(Program):
 		epr_socket: EPRSocket = context.epr_sockets[self.parties[0]]
 
 		# Receiving the |P> from ttp
-		epr_qubits = epr_socket.recv_keep(number=self.lambda_parameter)
+		epr_qubits = []
+		for i in range(self.lambda_parameter):
+			epr_qubits.append(epr_socket.recv_keep()[0])
 
 		# Select a merchant randomly
 		#merchant_id = random.randint(1, len(parties))
@@ -72,15 +75,15 @@ class ClientPrograme(Program):
 				j += 1
 				i += 1
 		yield from connection.flush()
-
+		print(f"K: {K}")
 		# Send K,C back to merchant
-		csocket_merchant.send(self.name)
+		csocket_merchant.send(self.client_name)
 		K_list = []
 		for elem in K:
 			K_list.append(str(elem))
 		K_str = ''.join(K_list)
 		csocket_merchant.send(K_str)
 		print(f"{ns.sim_time()} ns: Client sends to Merchant: {K_str}")
-
+		
 
 		return {}

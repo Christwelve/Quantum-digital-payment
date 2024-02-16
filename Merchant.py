@@ -7,27 +7,27 @@ from netqasm.sdk.epr_socket import EPRSocket
 
 from squidasm.sim.stack.program import Program, ProgramContext, ProgramMeta
 
-class MerchantPrograme(Program):
-    def __init__(self, client: str, bank: str, merchant_id: str):
-        self.client = client
-        self.bank = bank
+class MerchantProgram(Program):
+    def __init__(self, parties: List[str], merchant_id: str):
+        self.parties = parties
 
     @property
     def meta(self) -> ProgramMeta:
         return ProgramMeta(
-            name="tutorial_program",
-            csockets=[self.client, self.bank],
-			epr_sockets=self.client,
-            max_qubits=1,
+            name="sqdp",
+            csockets=self.parties,
+			epr_sockets=self.parties,
+            max_qubits=128,
         )
-        
-
+    
     def run(self, context: ProgramContext):
         # get classical socket to peer
-        bankCsocket = context.csockets[self.bank]
-        clientCsocket = context.csockets[self.client]
+        bankCsocket = context.csockets[self.parties[1]]
+        clientCsocket = context.csockets[self.parties[0]]
         # get connection to quantum network processing unit
         connection = context.connection
+		
+        print("Merchant program started")
 
         # Merchant listens for messages on his classical socket
         clientMessage = yield from clientCsocket.recv()
@@ -37,6 +37,6 @@ class MerchantPrograme(Program):
         bankCsocket.send(messageToBank)
         print(f"{ns.sim_time()} ns: Merchant sends to Bank message: {messageToBank}")
     
-        connection.flush()
+        yield from connection.flush()
 
         return {}
