@@ -1,6 +1,7 @@
 from netsquid_magic.models.perfect import PerfectLinkConfig
 from netsquid_netbuilder.modules.clinks.default import DefaultCLinkConfig
-from netsquid_netbuilder.util.network_generation import create_complete_graph_network
+from netsquid_netbuilder.util.network_generation import create_complete_graph_network, GenericQDeviceConfig
+
 
 from squidasm.run.stack.run import run
 from Client import ClientProgram
@@ -19,10 +20,12 @@ print(nodeList)
 # Merchant id should be 128 bit length
 #merchant_ids = [[merchant, base64.b64encode(os.urandom(16))] for merchant in node_merchants]
 merchant_id = base64.b64encode(os.urandom(16))
-lambda_parameter = 100
+lambda_parameter = 7
 C = os.urandom(32)
 
 M = [merchant_id]
+
+qdevice_cfg = GenericQDeviceConfig.perfect_config(256)
 
 # import network configuration from file
 cfg = create_complete_graph_network(
@@ -31,6 +34,8 @@ cfg = create_complete_graph_network(
     PerfectLinkConfig(state_delay=100),
     clink_typ="default",
     clink_cfg=DefaultCLinkConfig(delay=100),
+    qdevice_typ="generic",
+    qdevice_cfg=qdevice_cfg
 )
 
 
