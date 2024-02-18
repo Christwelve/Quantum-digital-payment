@@ -65,16 +65,17 @@ class ClientProgram(Program):
 		j = 0
 		for m_byte in m_list:
 			i = 0
-			while (i < 8):
+			while (i < 8 and j < self.lambda_parameter):
 				bit = (m_byte >> i) & 1
+				# print(f"{j}")
 				qubit = epr_qubits[j]
 				if (bit == 1):
 					qubit.H()
 				K.append(qubit.measure())
 				j += 1
 				i += 1
-			if (j > 8 * (self.lambda_parameter // 8) - 1):
-				break
+			# if (j > 8 * (self.lambda_parameter // 8) - 1):
+			# 	break
 		yield from connection.flush()
 		# Send K,C back to merchant
 		# csocket_merchant.send(self.client_name)

@@ -100,9 +100,9 @@ class BankProgram(Program):
         j = 0
         for m_byte in m_list:
             i = 0
-            while (i < 8):
-                if (j > 8 * (self.lambda_parameter // 8) - 1):
-                    break
+            while (i < 8 and j < self.lambda_parameter):
+                # if (j > 8 * (self.lambda_parameter // 8) - 1):
+                #     break
                 bit = (m_byte >> i) & 1
                 if (bit == B[j]):
                     if k_list[j] != b[j]:
@@ -110,8 +110,8 @@ class BankProgram(Program):
                         cnt+=1
                 j += 1
                 i += 1
-            if (j > 8 * (self.lambda_parameter // 8) - 1):
-                break
+            # if (j > 8 * (self.lambda_parameter // 8) - 1):
+            #     break
 
         if verified:
             print(f"{ns.sim_time()} ns: Bank verifies the transaction with merchant {merchant_id} and client {client_id}")
