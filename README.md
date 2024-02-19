@@ -1,7 +1,7 @@
 # Quantum-digital-payment
 
 Team: Md Shadnan Azwad Khan, Chin-Te LIAO, Christina Repou, Anne Marin,
-Flavia Voicu, Christian Meng, Sacha Ulysse Jeoffret
+Flavia Voicu, Christian Meng, Sacha Ulysse Jeoffret, Aymane Hassani
 
 ## Introduction
 This project presents a simulation of a quantum-digital payment protocol as described in the paper "Demonstration of quantum-digital payments" (Nature Communications, 14(1), June 2023). It utilizes SquidASM from the NetSquid Simulator to model the interactions between a Client, a Merchant, and a Bank/Credit Card Institute (Trusted Third Party, TTP) in a secure quantum payment environment.
@@ -105,3 +105,4 @@ https://github.com/dendeaisd
 https://github.com/SachaUlysse   
 https://github.com/ChrRepou   
 https://github.com/AMarin-git   
+https://github.com/AymaneHassani
